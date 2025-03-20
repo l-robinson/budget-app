@@ -30,9 +30,8 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <CssBaseline>
-          <RouterProvider router={router} />
-        </CssBaseline>
+        <CssBaseline />
+        <RouterProvider router={router} />
       </QueryClientProvider>
     </StrictMode>,
   )
