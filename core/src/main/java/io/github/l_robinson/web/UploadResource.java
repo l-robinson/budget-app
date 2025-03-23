@@ -1,6 +1,8 @@
 package io.github.l_robinson.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.jboss.resteasy.reactive.RestForm;
@@ -13,6 +15,7 @@ import io.github.l_robinson.web.model.AccountUploadProcessRequest;
 import io.github.l_robinson.web.model.AccountUploadResponse;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.resource.spi.IllegalStateException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -21,6 +24,7 @@ import jakarta.ws.rs.core.MediaType;
 @RequestScoped
 public class UploadResource {
 
+    private static final int MAX_LINES = 5;
     @Inject
     UploadCache uploadCache;
 
@@ -32,36 +36,37 @@ public class UploadResource {
         response.setUuid(UUID.randomUUID().toString());
         response.setFilename(csv.fileName());
 
+        List<CsvRecord> records = new ArrayList<>();
         try (CsvReader<CsvRecord> csvReader = CsvReader.builder().ofCsvRecord(csv.filePath())) {
-            int c = 0;
+            int lineCount = 0;
             for (CsvRecord record : csvReader) {
                 if (!record.isComment()) {
-                    response.addLine(record.getFields());
-                    if (++c >= 5) {
-                        break;
+                    records.add(record);
+                    if (++lineCount <= MAX_LINES) {
+                        response.addLine(record.getFields());
                     }
                 }
             }
         };
 
-        uploadCache.put(response.getUuid(), csv.filePath());
+        uploadCache.put(response.getUuid(), records);
         return response;
     }
 
     @POST
     @Path("account-process")
-    public void uploadAccount(AccountUploadProcessRequest request) throws IOException {
-        java.nio.file.Path path = uploadCache.get(request.getUuid());
-
-        try (CsvReader<CsvRecord> csvReader = CsvReader.builder().ofCsvRecord(path)) {
-            int c = 0;
-            for (CsvRecord record : csvReader) {
-                if ((!request.isSkipHeader() || c++ > 0) && !record.isComment()) {
-                    // TODO convert to entity and store
-                    System.out.println(record.toString());
-                }
+    public void uploadAccount(AccountUploadProcessRequest request) throws Exception {
+        List<CsvRecord> records = uploadCache.get(request.getUuid());
+        if (records == null) {
+            throw new IllegalStateException("CSV data no longer available, please re-upload");
+        }
+        int lineCount = 0;
+        for (CsvRecord record : records) {
+            if ((!request.isSkipHeader() || ++lineCount > 0)) {
+                // TODO convert to entity and store
+                System.out.println(record.toString());
             }
-        };
+        }
     }
 
 }

@@ -8,7 +8,7 @@ import jakarta.ws.rs.Path;
 public class BaseResource {
 
     @Inject
-    UploadResource uploadResource;
+    AccountResource accountResource;
 
     @GET()
     @Path("version")
@@ -16,9 +16,9 @@ public class BaseResource {
         return "version 1";
     }
 
-    @Path("upload")
-    public UploadResource upload() {
-        return uploadResource;
+    @Path("accounts")
+    public AccountResource accounts() {
+        return accountResource;
     }
 
 }

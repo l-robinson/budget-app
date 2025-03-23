@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 function ColumnDefiner({ filename, rows, columns, onSubmit }) {
     const [header, setHeader] = useState(false);
-    const [colSettings, setColSettings] = useState(columns.map(() => {return {error: false, col: ""}}));
+    const [colSettings, setColSettings] = useState(rows[0].map(() => {return {error: false, col: ""}}));
 
     function handleChange(idx, value) {
         const settings = new Array();
