@@ -6,7 +6,7 @@ import java.util.List;
 public class AccountUploadColumn {
 
     enum Col {
-        DATE_TIME("Date / Time"), AMOUNT("Amount"), VENDOR("Vendor"), DESCRIPTION("Description"), CATEGORY("Category");
+        DATE_TIME("Date / Time"), AMOUNT("Amount"), MERCHANT("Merchant"), DESCRIPTION("Description"), CATEGORY("Category");
         private String displayName;
         Col(String displayName) {
             this.displayName = displayName;

@@ -1,15 +1,9 @@
-import { Box } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
-    component: Index,
+  component: RouteComponent,
 })
 
-function Index() {
-    return (
-        <Box>
-            Hello World
-        </Box>
-    )
+function RouteComponent() {
+  useRouter().navigate({to: '/accounts'})
 }

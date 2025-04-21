@@ -7,14 +7,14 @@ function versionQuery() {
 }
 
 export function Footer() {
-    const info = useQuery({ queryKey: ['version'], queryFn: versionQuery })
+    const info = useQuery({ queryKey: ['version'], queryFn: versionQuery, staleTime: Infinity })
 
     if (info.isError) return info.error.message;
 
     if (info.isFetching) return 'Fetching';
 
     return (
-        <Box>
+        <Box component="footer" sx={{mx: 'auto', color: 'text.secondary'}}>
             {info.data.data}
         </Box>
     )
